@@ -1,0 +1,561 @@
+@import "tailwindcss";
+
+@theme {
+  /* -------------------------------------------------- */
+  /* TYPOGRAPHY FAMILIES                                */
+  /* -------------------------------------------------- */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-serif: "Fraunces", "Faculty Glyphic", Georgia, serif;
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* -------------------------------------------------- */
+  /* COLOR SYSTEM TOKENS                                */
+  /* -------------------------------------------------- */
+  /* Website Canvas & Background */
+  --color-canvas: #F7F5F0;
+  --color-warm-bg: #F7F5F0;
+
+  /* Surfaces & Cards */
+  --color-surface: #FFFFFF;
+  --color-surface-white: #FFFFFF;
+  --color-surface-muted: #F5F5F3;
+  --color-dark-card: #0E0E10;
+  --color-dark-btn: #0E0E10;
+  --color-dark-surface: #0E0E10;
+
+  /* Typography Hierarchy */
+  --color-primary: #171717;
+  --color-primary-text: #171717;
+  --color-secondary: #545454;
+  --color-secondary-text: #545454;
+  --color-muted: #8E8E93;
+  --color-tertiary-text: #8E8E93;
+  --color-disabled: #A1A1A6;
+  --color-disabled-text: #A1A1A6;
+
+  /* Accents & Highlights */
+  --color-accent: #A390FB;
+  --color-accent-lavender: #A390FB;
+  --color-accent-subtle: #E8E4F8;
+  --color-accent-highlight: #F7F5FE;
+  --color-lavender-subtle: #E8E4F8;
+  --color-lavender-highlight: #F7F5FE;
+
+  /* Borders & Dividers */
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-border-medium: rgba(0, 0, 0, 0.15);
+  --color-border-dark: rgba(255, 255, 255, 0.10);
+  --color-border-accent: #A390FB;
+
+  /* -------------------------------------------------- */
+  /* BORDER RADIUS TOKENS                               */
+  /* -------------------------------------------------- */
+  --radius-xs: 2px;
+  --radius-card: 20px;
+  --radius-mockup: 14px;
+  --radius-pill: 9999px;
+
+  /* -------------------------------------------------- */
+  /* SHADOW & ELEVATION TOKENS                          */
+  /* -------------------------------------------------- */
+  --shadow-card-light: 0 20px 45px -12px rgba(0, 0, 0, 0.12);
+  --shadow-card-dark: 0 20px 45px -12px rgba(0, 0, 0, 0.40);
+  --shadow-glow-lavender: 0 0 20px 2px rgba(163, 144, 251, 0.38), 0 0 8px 0 rgba(163, 144, 251, 0.22);
+
+  /* -------------------------------------------------- */
+  /* GLOBAL CONTENT CONTAINER & MESH TOKENS             */
+  /* -------------------------------------------------- */
+  --width-container: 1440px;
+  --mesh-dot-color: rgba(23, 23, 23, 0.095);
+  --mesh-dot-size: 2px;
+
+  /* -------------------------------------------------- */
+  /* STANDARDIZED PRIMARY HEADING TOKENS                */
+  /* -------------------------------------------------- */
+  --font-size-heading-mobile: 32px;
+  --font-size-heading-desktop: 64px;
+}
+
+:root {
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas, #F7F5F0);
+  color: var(--color-primary, #171717);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-canvas, #F7F5F0);
+  color: var(--color-primary, #171717);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================ */
+/* REUSABLE SEMANTIC TYPOGRAPHY UTILITY CLASSES                 */
+/* ============================================================ */
+
+/* Standardized Primary Section Heading: 32px mobile -> 64px desktop */
+.type-section-heading {
+  font-size: var(--font-size-heading-mobile, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+@media (min-width: 640px) {
+  .type-section-heading {
+    font-size: 44px;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 768px) {
+  .type-section-heading {
+    font-size: 52px;
+    line-height: 1.08;
+  }
+}
+
+@media (min-width: 1024px) {
+  .type-section-heading {
+    font-size: var(--font-size-heading-desktop, 64px);
+    line-height: 1.08;
+  }
+}
+
+/* Display / Primary Heading H1: Fraunces 64px desktop with responsive scaling */
+.type-display-h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 4.5vw + 1rem, 4rem);
+  /* 36px mobile -> 48px tablet -> 64px desktop */
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+/* Secondary / Section Heading H2: Geist 28px, Semibold (600) */
+.type-section-h2 {
+  font-family: var(--font-sans);
+  font-size: 1.75rem;
+  /* 28px */
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+
+/* Hero Introduction: Geist 24px, Regular (400) */
+.type-hero-intro {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  /* 24px */
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+/* Body Text: Geist 16px, Regular (400) */
+.type-body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  /* 16px */
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+/* Buttons: Geist 12px, Medium (500) */
+.type-button {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  /* 12px */
+  font-weight: 500;
+  line-height: 1rem;
+  /* 16px */
+  letter-spacing: -0.01em;
+}
+
+/* Card Heading H3: Geist 22px–24px, Semibold (600) */
+.type-card-h3 {
+  font-family: var(--font-sans);
+  font-size: 1.375rem;
+  /* 22px */
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+/* Caption / Supporting Text: Geist 14px, Regular (400) */
+.type-caption {
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  /* 14px */
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* Micro / Badges: Geist 11px–12px */
+.type-micro {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  /* 12px */
+  font-weight: 400;
+  line-height: 1.125rem;
+  /* 18px */
+  letter-spacing: 0;
+}
+
+/* Drafting grid background subtle styling */
+.drafting-line {
+  vector-effect: non-scaling-stroke;
+}
+
+/* Animated Highlight Badge keyframe: 3s total cycle (2s transparent, 1s highlighted) */
+@keyframes badgeBreath3s {
+
+  0%,
+  48% {
+    opacity: 0;
+  }
+
+  64%,
+  84% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-badge-pulse {
+  animation: badgeBreath3s 3s ease-in-out infinite;
+}
+
+/* Animated Gradient Border Badge (1px Conic Gradient Border with Rotating Pseudo-Element) */
+@keyframes rotateBorderRunner {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.animated-gradient-border {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-pill, 9999px);
+  padding: 1px;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 1;
+}
+
+.animated-gradient-border::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  aspect-ratio: 1;
+  min-width: 260px;
+  min-height: 260px;
+  background: conic-gradient(from 0deg,
+      var(--color-accent, #a390fb) 0%,
+      var(--color-accent-subtle, #e8e4f8) 25%,
+      #ffffff 50%,
+      var(--color-accent-subtle, #e8e4f8) 75%,
+      var(--color-accent, #a390fb) 100%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  animation: rotateBorderRunner 3s linear infinite;
+  will-change: transform;
+}
+
+/* ============================================================ */
+/* AMBIENT EMOJI ANIMATION SYSTEM                               */
+/* ============================================================ */
+
+/* 1. Special Variant: Waving Hand 👋 (Natural human wave from wrist with polite pause) */
+@keyframes emojiWave {
+  0% {
+    transform: rotate(0deg);
+  }
+  6% {
+    transform: rotate(14deg);
+  }
+  12% {
+    transform: rotate(-10deg);
+  }
+  18% {
+    transform: rotate(14deg);
+  }
+  24% {
+    transform: rotate(-6deg);
+  }
+  30% {
+    transform: rotate(10deg);
+  }
+  36% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-emoji-wave {
+  animation: emojiWave 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* 2. Special Variant: Brain Emoji 🧠 (Spring-like scaling to 115% with gentle overshoot) */
+@keyframes emojiBrainSpring {
+  0% {
+    transform: scale(1);
+  }
+  12% {
+    transform: scale(1.15);
+  }
+  22% {
+    transform: scale(0.97);
+  }
+  30% {
+    transform: scale(1.03);
+  }
+  38% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-emoji-brain {
+  animation: emojiBrainSpring 3.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* 3. Special Variant: Lightbulb Emoji 💡 (Idea taking off: enlarges by 15%, lifts upward, spring return, 3.5s cycle) */
+@keyframes emojiBulbSpring {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  12% {
+    transform: translateY(-8px) scale(1.15) rotate(-3deg);
+  }
+  22% {
+    transform: translateY(1px) scale(0.97) rotate(2deg);
+  }
+  30% {
+    transform: translateY(-2px) scale(1.03) rotate(-1deg);
+  }
+  38% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+.animate-emoji-bulb {
+  animation: emojiBulbSpring 3.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* 4. Special Variant: Rocket Emoji 🚀 (Takeoff thrust: lifts diagonally upward to right, tilts, gentle return) */
+@keyframes emojiRocketTakeoff {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  12% {
+    transform: translate(10px, -14px) rotate(14deg) scale(1.12);
+  }
+  20% {
+    transform: translate(11px, -15px) rotate(12deg) scale(1.08);
+  }
+  35% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+}
+
+.animate-emoji-rocket {
+  animation: emojiRocketTakeoff 3.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+/* 3. Ambient Float (e.g. 🌍 Globe, 🛠️ Tools): Gentle 2-3px float with subtle tilt */
+@keyframes emojiFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+  50% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(-1.5deg);
+  }
+}
+
+.animate-emoji-float {
+  animation: emojiFloat 4.2s ease-in-out infinite;
+}
+
+/* 4. Ambient Wobble (e.g. 💻 Laptop, 🎨 Palette): Soft tilt wobble with rest pause */
+@keyframes emojiWobble {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(-6deg);
+  }
+  20% {
+    transform: rotate(5deg);
+  }
+  30% {
+    transform: rotate(-3deg);
+  }
+  40% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-emoji-wobble {
+  animation: emojiWobble 4.5s ease-in-out infinite;
+}
+
+/* 5. Ambient Pulse: Soft breathing scale (1.08) with rest pause */
+@keyframes emojiPulse {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.08);
+  }
+  28% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-emoji-pulse {
+  animation: emojiPulse 3.8s ease-in-out infinite;
+}
+
+/* 6. Default Ambient Motion: Subtle float (-2.5px) and slight rotation (±3°) with rest pause */
+@keyframes emojiAmbient {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  14% {
+    transform: translateY(-2.5px) rotate(3deg);
+  }
+  28% {
+    transform: translateY(1px) rotate(-2deg);
+  }
+  40% {
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.animate-emoji-ambient {
+  animation: emojiAmbient 4.0s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-gradient-border::before,
+  .animate-badge-pulse,
+  .animate-emoji-wave,
+  .animate-emoji-brain,
+  .animate-emoji-bulb,
+  .animate-emoji-rocket,
+  .animate-emoji-float,
+  .animate-emoji-wobble,
+  .animate-emoji-pulse,
+  .animate-emoji-ambient {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .tw-token {
+    opacity: 1 !important;
+  }
+
+  .hero-metrics {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .metric-hover-row {
+    transition: none !important;
+    transform: none !important;
+  }
+  .metric-hover-row:hover {
+    transform: none !important;
+  }
+}
+
+/* ============================================================ */
+/* HERO EXPERIENCE METRICS HOVER INTERACTION                    */
+/* ============================================================ */
+.metric-hover-row {
+  transform-origin: left center;
+  transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .metric-hover-row:hover {
+    transform: scale(1.25);
+  }
+}
+
+/* ============================================================ */
+/* GLOBAL HTML & SMOOTH SCROLLING                               */
+/* ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================================ */
+/* SUBTLE DOTTED MESH BACKGROUND PATTERN                        */
+/* ============================================================ */
+
+/* Lightweight CSS Radial Gradient Dotted Mesh (~2x dot size, enhanced contrast) */
+.bg-mesh-dots {
+  background-image: radial-gradient(circle, var(--mesh-dot-color, rgba(23, 23, 23, 0.095)) 2px, transparent 2px);
+  background-size: 24px 24px;
+  background-position: center top;
+}
+
+/* Page Dotted Mesh Layer: Centered to 1440px container, spans full page height, scrolls with content */
+.page-mesh-layer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--width-container, 1440px);
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, var(--mesh-dot-color, rgba(23, 23, 23, 0.095)) 2px, transparent 2px);
+  background-size: 24px 24px;
+  background-position: center top;
+  overflow: hidden;
+}
