@@ -25,6 +25,17 @@ export default function FooterSection({ className = '' }) {
   const headingRef = useRef(null)
   const emailRef = useRef(null)
   const artworkRef = useRef(null)
+  const parallaxRef = useRef(null)
+
+  // Parallax state refs (avoid React re-renders for smooth 60fps performance)
+  const pointerTargetRef = useRef({ x: 0, y: 0 })
+  const scrollTargetRef = useRef({ x: 0, y: 0 })
+  const currentPosRef = useRef({ x: 0, y: 0 })
+  const pointerIdleTimerRef = useRef(null)
+  const scrollIdleTimerRef = useRef(null)
+  const lastScrollYRef = useRef(0)
+  const isFooterVisibleRef = useRef(false)
+  const isTickerActiveRef = useRef(false)
 
   const [copied, setCopied] = useState(false)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -95,6 +106,195 @@ export default function FooterSection({ className = '' }) {
     return () => ctx.revert()
   }, [prefersReducedMotion])
 
+  // Subtle one-directional parallax animation for David sculpture
+  // Moves right and downward only (bounds [0, 12]px), returns to (0, 0) on rest
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      prefersReducedMotion ||
+      !parallaxRef.current
+    ) {
+      if (parallaxRef.current) {
+        parallaxRef.current.style.transform = 'translate3d(0px, 0px, 0px)'
+      }
+      return
+    }
+
+    const element = parallaxRef.current
+    const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+    // Smooth interpolation loop (GSAP ticker runs in sync with display refresh rate)
+    const updateParallax = () => {
+      if (
+        !isFooterVisibleRef.current &&
+        currentPosRef.current.x === 0 &&
+        currentPosRef.current.y === 0
+      ) {
+        return
+      }
+
+      // Calculate combined target offset clamped strictly to [0, 12]px
+      const targetX = Math.min(
+        12,
+        Math.max(0, pointerTargetRef.current.x + scrollTargetRef.current.x)
+      )
+      const targetY = Math.min(
+        12,
+        Math.max(0, pointerTargetRef.current.y + scrollTargetRef.current.y)
+      )
+
+      // Smooth damping interpolation (gentle response, no sudden jumps)
+      const damping = 0.08
+      currentPosRef.current.x += (targetX - currentPosRef.current.x) * damping
+      currentPosRef.current.y += (targetY - currentPosRef.current.y) * damping
+
+      // Strict enforcement of boundaries: right and downward only (min 0, max 12)
+      currentPosRef.current.x = Math.max(0, Math.min(12, currentPosRef.current.x))
+      currentPosRef.current.y = Math.max(0, Math.min(12, currentPosRef.current.y))
+
+      // Snap to exact zero when within threshold to prevent cumulative float drift
+      if (currentPosRef.current.x < 0.01 && targetX === 0) {
+        currentPosRef.current.x = 0
+      }
+      if (currentPosRef.current.y < 0.01 && targetY === 0) {
+        currentPosRef.current.y = 0
+      }
+
+      element.style.transform = `translate3d(${currentPosRef.current.x.toFixed(2)}px, ${currentPosRef.current.y.toFixed(2)}px, 0)`
+
+      // Auto-sleep ticker when completely at rest (0, 0) and target is 0
+      if (
+        currentPosRef.current.x === 0 &&
+        currentPosRef.current.y === 0 &&
+        targetX === 0 &&
+        targetY === 0 &&
+        isTickerActiveRef.current
+      ) {
+        gsap.ticker.remove(updateParallax)
+        isTickerActiveRef.current = false
+      }
+    }
+
+    const wakeTicker = () => {
+      if (!isTickerActiveRef.current) {
+        isTickerActiveRef.current = true
+        gsap.ticker.add(updateParallax)
+      }
+    }
+
+    // Desktop Pointer Movement (fine pointer & hover supported)
+    const handlePointerMove = (e) => {
+      if (!isFooterVisibleRef.current) return
+
+      // Map client pointer coordinates to [0, 12]px range
+      const nx = Math.max(0, Math.min(1, e.clientX / window.innerWidth))
+      const ny = Math.max(0, Math.min(1, e.clientY / window.innerHeight))
+
+      pointerTargetRef.current.x = Math.max(0, Math.min(12, nx * 12))
+      pointerTargetRef.current.y = Math.max(0, Math.min(12, ny * 12))
+
+      wakeTicker()
+
+      // Reset idle timer: when interaction stops, gently return to (0, 0)
+      if (pointerIdleTimerRef.current) {
+        clearTimeout(pointerIdleTimerRef.current)
+      }
+      pointerIdleTimerRef.current = setTimeout(() => {
+        pointerTargetRef.current.x = 0
+        pointerTargetRef.current.y = 0
+        wakeTicker()
+      }, 350)
+    }
+
+    const handlePointerLeave = () => {
+      if (pointerIdleTimerRef.current) {
+        clearTimeout(pointerIdleTimerRef.current)
+      }
+      pointerTargetRef.current.x = 0
+      pointerTargetRef.current.y = 0
+      wakeTicker()
+    }
+
+    // Scroll Movement (Desktop & Mobile)
+    const handleScroll = () => {
+      if (!isFooterVisibleRef.current) {
+        lastScrollYRef.current = window.scrollY || window.pageYOffset
+        return
+      }
+
+      const currentScrollY = window.scrollY || window.pageYOffset
+      const deltaY = currentScrollY - lastScrollYRef.current
+      lastScrollYRef.current = currentScrollY
+
+      // Strictly downward scrolling (deltaY > 0) nudges rightward and downward
+      // Upward scrolling (deltaY <= 0) never causes negative movement
+      if (deltaY > 0) {
+        const nudgeX = Math.min(12, Math.max(0, deltaY * 0.35))
+        const nudgeY = Math.min(12, Math.max(0, deltaY * 0.45))
+        scrollTargetRef.current.x = Math.max(scrollTargetRef.current.x, nudgeX)
+        scrollTargetRef.current.y = Math.max(scrollTargetRef.current.y, nudgeY)
+        wakeTicker()
+      }
+
+      // Reset scroll idle timer: when scrolling stops, gently return to (0, 0)
+      if (scrollIdleTimerRef.current) {
+        clearTimeout(scrollIdleTimerRef.current)
+      }
+      scrollIdleTimerRef.current = setTimeout(() => {
+        scrollTargetRef.current.x = 0
+        scrollTargetRef.current.y = 0
+        wakeTicker()
+      }, 200)
+    }
+
+    // IntersectionObserver to activate parallax only when footer is in view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        isFooterVisibleRef.current = entry.isIntersecting
+        if (!entry.isIntersecting) {
+          pointerTargetRef.current = { x: 0, y: 0 }
+          scrollTargetRef.current = { x: 0, y: 0 }
+          currentPosRef.current = { x: 0, y: 0 }
+          element.style.transform = 'translate3d(0px, 0px, 0px)'
+          if (isTickerActiveRef.current) {
+            gsap.ticker.remove(updateParallax)
+            isTickerActiveRef.current = false
+          }
+        } else {
+          lastScrollYRef.current = window.scrollY || window.pageYOffset
+        }
+      },
+      { threshold: 0.05 }
+    )
+
+    if (footerRef.current) {
+      observer.observe(footerRef.current)
+    }
+
+    if (isFinePointer) {
+      window.addEventListener('mousemove', handlePointerMove, { passive: true })
+      window.addEventListener('mouseleave', handlePointerLeave, { passive: true })
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      if (isFinePointer) {
+        window.removeEventListener('mousemove', handlePointerMove)
+        window.removeEventListener('mouseleave', handlePointerLeave)
+      }
+      window.removeEventListener('scroll', handleScroll)
+      if (pointerIdleTimerRef.current) clearTimeout(pointerIdleTimerRef.current)
+      if (scrollIdleTimerRef.current) clearTimeout(scrollIdleTimerRef.current)
+      if (isTickerActiveRef.current) {
+        gsap.ticker.remove(updateParallax)
+        isTickerActiveRef.current = false
+      }
+    }
+  }, [prefersReducedMotion])
+
   const socialLinks = [
     {
       id: 'behance',
@@ -118,7 +318,7 @@ export default function FooterSection({ className = '' }) {
     {
       id: 'linkedin',
       name: 'Linkedin',
-      url: 'https://www.linkedin.com/in/souravhaldar',
+      url: 'https://www.linkedin.com/in/sourav-haldar2/',
       icon: (
         <svg
           className="w-4 h-4 shrink-0 rounded-full"
@@ -137,7 +337,7 @@ export default function FooterSection({ className = '' }) {
     {
       id: 'github',
       name: 'Github',
-      url: 'https://github.com/souravhaldar',
+      url: 'https://github.com/sourav2',
       icon: (
         <svg
           className="w-4 h-4 shrink-0 rounded-full"
@@ -310,22 +510,28 @@ export default function FooterSection({ className = '' }) {
       {/* ============================================================ */}
       <div
         ref={artworkRef}
-        className="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden w-[380px] sm:w-[500px] md:w-[640px] lg:w-[840px] xl:w-[960px] max-w-[62vw]"
+        className="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden w-[475px] sm:w-[625px] md:w-[800px] lg:w-[1050px] xl:w-[1200px] 2xl:w-[1280px] max-w-[76vw]"
         aria-hidden="true"
       >
-        <img
-          src="/assets/david-sketch.png"
-          alt="Michelangelo David Sketch Artwork"
-          className="w-full h-auto object-contain object-right-bottom mix-blend-multiply opacity-80 sm:opacity-90 lg:opacity-95 transition-opacity"
-          style={{
-            maskImage:
-              'radial-gradient(ellipse 85% 85% at 90% 90%, black 45%, rgba(0,0,0,0.8) 65%, rgba(0,0,0,0.2) 85%, transparent 100%)',
-            WebkitMaskImage:
-              'radial-gradient(ellipse 85% 85% at 90% 90%, black 45%, rgba(0,0,0,0.8) 65%, rgba(0,0,0,0.2) 85%, transparent 100%)',
-            filter: 'contrast(1.05) brightness(0.97)',
-          }}
-          loading="lazy"
-        />
+        <div
+          ref={parallaxRef}
+          className="w-full h-full will-change-transform"
+          style={{ transform: 'translate3d(0px, 0px, 0px)' }}
+        >
+          <img
+            src="/assets/david-sketch.png"
+            alt="Michelangelo David Sketch Artwork"
+            className="w-full h-auto object-contain object-right-bottom mix-blend-multiply opacity-80 sm:opacity-90 lg:opacity-95 transition-opacity"
+            style={{
+              maskImage:
+                'radial-gradient(ellipse 88% 88% at 92% 92%, black 48%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.25) 86%, transparent 100%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse 88% 88% at 92% 92%, black 48%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.25) 86%, transparent 100%)',
+              filter: 'contrast(1.05) brightness(0.97)',
+            }}
+            loading="lazy"
+          />
+        </div>
       </div>
     </footer>
   )

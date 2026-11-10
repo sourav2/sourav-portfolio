@@ -20,6 +20,7 @@ export default defineConfig({
         heroSlider: resolve(import.meta.dirname, 'hero-slider-preview.html'),
         headerNav: resolve(import.meta.dirname, 'header-nav-preview.html'),
         header: resolve(import.meta.dirname, 'header-preview.html'),
+        caseStudy: resolve(import.meta.dirname, 'case-study-preview.html'),
       },
     },
   },

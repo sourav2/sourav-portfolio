@@ -17,16 +17,6 @@ if (typeof window !== 'undefined') {
  */
 export const DEFAULT_PROJECTS = [
   {
-    id: 'aptech',
-    title: "Redesigning Aptech's Course Discovery Website",
-    tags: ['High-Fidelity Web UI', 'UI/UX Design'],
-    description:
-      'Reconstructed the web interface layout around a strong visual grid, prominent CTA placements, and a clear typographic hierarchy to drive user action.',
-    image: '/assets/projects/Aptech.jpg',
-    caseStudyUrl: '#case-study-aptech',
-    category: 'EdTech / Web Platform',
-  },
-  {
     id: 'elvan',
     title: 'Curating Property Discovery for Exceptional Living',
     tags: ['UI/UX Design', 'Editorial UI Design', 'Premium Real Estate'],
@@ -35,6 +25,16 @@ export const DEFAULT_PROJECTS = [
     image: '/assets/projects/Elvan.jpg',
     caseStudyUrl: '#case-study-elvan',
     category: 'Real Estate / Editorial UI',
+  },
+  {
+    id: 'roamio',
+    title: 'AI-Powered Travel Discovery & Itinerary Planning',
+    tags: ['UI/UX Design', 'AI Product Design', 'Travel Tech'],
+    description:
+      'Translated AI-generated recommendations into clear destination cards, interactive maps, day-wise itineraries, and editable trip plans—keeping the traveler in control.',
+    image: '/assets/projects/Roamio.jpg',
+    caseStudyUrl: '#case-study-roamio',
+    category: 'Travel Tech / AI UX',
   },
   {
     id: 'ghreall',
@@ -48,14 +48,14 @@ export const DEFAULT_PROJECTS = [
     category: 'Enterprise / Data-Dense UI',
   },
   {
-    id: 'roamio',
-    title: 'AI-Powered Travel Discovery & Itinerary Planning',
-    tags: ['UI/UX Design', 'AI Product Design', 'Travel Tech'],
+    id: 'aptech',
+    title: "Redesigning Aptech's Course Discovery Website",
+    tags: ['High-Fidelity Web UI', 'UI/UX Design'],
     description:
-      'Translated AI-generated recommendations into clear destination cards, interactive maps, day-wise itineraries, and editable trip plans—keeping the traveler in control.',
-    image: '/assets/projects/Roamio.jpg',
-    caseStudyUrl: '#case-study-roamio',
-    category: 'Travel Tech / AI UX',
+      'Reconstructed the web interface layout around a strong visual grid, prominent CTA placements, and a clear typographic hierarchy to drive user action.',
+    image: '/assets/projects/Aptech.jpg',
+    caseStudyUrl: '#case-study-aptech',
+    category: 'EdTech / Web Platform',
   },
 ]
 
@@ -333,11 +333,10 @@ export default function CaseStudyShowcase({
                 return (
                   <div
                     key={project.id}
-                    className={`absolute inset-0 w-full h-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      isActive
+                    className={`absolute inset-0 w-full h-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${isActive
                         ? 'opacity-100 scale-100 z-10 pointer-events-auto'
                         : 'opacity-0 scale-[1.03] z-0 pointer-events-none'
-                    }`}
+                      }`}
                   >
                     <CaseStudyMedia
                       project={project}
@@ -474,7 +473,7 @@ export default function CaseStudyShowcase({
       {/*   circular minus indicator, description, and AnimatedCTA     */}
       {/* ============================================================ */}
       <div className="block lg:hidden w-full max-w-[680px] mx-auto px-5 sm:px-8 py-8 sm:py-12 select-none">
-        
+
         {/* Section Heading */}
         <div className="space-y-2.5 mb-7 sm:mb-8">
           <div>

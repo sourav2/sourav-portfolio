@@ -32,6 +32,7 @@ export default function AnimatedCTA({
   onClick,
   className = '',
   ariaLabel,
+  disabled = false,
   forcedState, // optional: 'default' | 'hover' for side-by-side showcase previews
   ...rest
 }) {
@@ -47,10 +48,11 @@ export default function AnimatedCTA({
     }
   }, [text])
 
-  // Determine whether hover/active visual state is active
+  // Determine whether hover/active visual state is active (disabled suppresses hover)
   const isActive =
-    forcedState === 'hover' ||
-    (forcedState !== 'default' && (isHovered || isFocused))
+    !disabled &&
+    (forcedState === 'hover' ||
+      (forcedState !== 'default' && (isHovered || isFocused)))
 
   // Support system reduced-motion preference
   const prefersReducedMotion =
@@ -158,13 +160,16 @@ export default function AnimatedCTA({
   )
 
   const commonClasses = `
-    group relative inline-flex items-center p-[6px] rounded-full cursor-pointer
-    transition-transform duration-150 ease-out active:scale-[0.97]
-    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas
+    group relative inline-flex items-center p-[6px] rounded-full
+    ${
+      disabled
+        ? 'cursor-not-allowed opacity-60 select-none'
+        : 'cursor-pointer transition-transform duration-150 ease-out active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-canvas'
+    }
     ${className}
   `
 
-  if (href) {
+  if (href && !disabled) {
     return (
       <a
         href={href}
@@ -186,11 +191,13 @@ export default function AnimatedCTA({
   return (
     <button
       type="button"
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => setIsFocused(true)}
-      onBlur={() => setIsFocused(false)}
+      disabled={disabled}
+      aria-disabled={disabled ? 'true' : undefined}
+      onClick={disabled ? undefined : onClick}
+      onMouseEnter={() => !disabled && setIsHovered(true)}
+      onMouseLeave={() => !disabled && setIsHovered(false)}
+      onFocus={() => !disabled && setIsFocused(true)}
+      onBlur={() => !disabled && setIsFocused(false)}
       className={commonClasses}
       aria-label={ariaLabel || text}
       {...rest}

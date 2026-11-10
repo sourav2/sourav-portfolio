@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" width="1440" height="900" style="background:#FCFBF9; font-family:'Geist', -apple-system, sans-serif;">
+  <defs>
+    <radialGradient id="mesh-8" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#A390FB" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FCFBF9" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow-8" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="12" stdDeviation="24" flood-color="#000" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <!-- Background base & subtle ambient glow -->
+  <rect width="1440" height="900" fill="#FCFBF9"/>
+  <rect width="1440" height="900" fill="url(#mesh-8)"/>
+  <rect x="32" y="32" width="1376" height="836" rx="20" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="1.5"/>
+
+  <!-- Top Slide Header -->
+  <g transform="translate(80, 80)">
+    <text x="0" y="24" font-size="13" font-weight="600" fill="#A390FB" letter-spacing="3">SECTION 08 • FINAL EXPERIENCE &amp; RESULTS</text>
+    <text x="1280" y="24" text-anchor="end" font-size="14" font-weight="600" fill="#171717" letter-spacing="2">ELVAN</text>
+    <line x1="0" y1="46" x2="1280" y2="46" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+  </g>
+
+  <!-- Main Headline & Subtitle -->
+  <g transform="translate(80, 190)">
+    <text x="0" y="44" font-family="'Fraunces', 'Faculty Glyphic', Georgia, serif" font-size="44" font-weight="400" fill="#171717" letter-spacing="-0.5">An Exceptional Standard of Living</text>
+    <text x="0" y="86" font-size="18" font-weight="400" fill="#545454" letter-spacing="-0.2">Transforming luxury real estate discovery into a calm, elevated, and inspiring journey.</text>
+  </g>
+
+  <!-- 3 Strategic Highlight Columns -->
+  <g transform="translate(80, 330)">
+    
+      <g transform="translate(0, 0)">
+        <rect width="400" height="460" rx="16" fill="#FFFFFF" stroke="rgba(0,0,0,0.08)" stroke-width="1" filter="url(#shadow-8)"/>
+        
+        <!-- Category Pill Badge -->
+        <rect x="32" y="36" width="75" height="26" rx="13" fill="#E8E4F8"/>
+        <text x="44" y="53" font-size="10.5" font-weight="600" fill="#A390FB" letter-spacing="1.2">IMPACT</text>
+
+        <!-- Column Heading -->
+        <text x="32" y="112" font-family="'Fraunces', 'Faculty Glyphic', Georgia, serif" font-size="24" font-weight="500" fill="#171717" letter-spacing="-0.3">
+          68% Increase in Session ...
+        </text>
+
+        <line x1="32" y1="136" x2="368" y2="136" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+        <!-- Column Description -->
+        <foreignObject x="32" y="156" width="336" height="260">
+          <p xmlns="http://www.w3.org/1999/xhtml" style="margin:0; font-family:'Geist', sans-serif; font-size:15px; line-height:1.65; color:#545454;">
+            Average session duration reached 8m 42s with users reviewing an average of 4.3 curated properties per visit.
+          </p>
+        </foreignObject>
+
+        <!-- Subtle bottom accent line -->
+        <rect x="32" y="420" width="48" height="3" rx="1.5" fill="#A390FB"/>
+      </g>
+    
+      <g transform="translate(440, 0)">
+        <rect width="400" height="460" rx="16" fill="#FFFFFF" stroke="rgba(0,0,0,0.08)" stroke-width="1" filter="url(#shadow-8)"/>
+        
+        <!-- Category Pill Badge -->
+        <rect x="32" y="36" width="109" height="26" rx="13" fill="#E8E4F8"/>
+        <text x="44" y="53" font-size="10.5" font-weight="600" fill="#A390FB" letter-spacing="1.2">COMMERCIAL</text>
+
+        <!-- Column Heading -->
+        <text x="32" y="112" font-family="'Fraunces', 'Faculty Glyphic', Georgia, serif" font-size="24" font-weight="500" fill="#171717" letter-spacing="-0.3">
+          Over $28M in Curated Pip...
+        </text>
+
+        <line x1="32" y1="136" x2="368" y2="136" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+        <!-- Column Description -->
+        <foreignObject x="32" y="156" width="336" height="260">
+          <p xmlns="http://www.w3.org/1999/xhtml" style="margin:0; font-family:'Geist', sans-serif; font-size:15px; line-height:1.65; color:#545454;">
+            Direct developer partnerships secured 12 exclusive premium projects within 60 days of platform unveiling.
+          </p>
+        </foreignObject>
+
+        <!-- Subtle bottom accent line -->
+        <rect x="32" y="420" width="48" height="3" rx="1.5" fill="#A390FB"/>
+      </g>
+    
+      <g transform="translate(880, 0)">
+        <rect width="400" height="460" rx="16" fill="#FFFFFF" stroke="rgba(0,0,0,0.08)" stroke-width="1" filter="url(#shadow-8)"/>
+        
+        <!-- Category Pill Badge -->
+        <rect x="32" y="36" width="117.5" height="26" rx="13" fill="#E8E4F8"/>
+        <text x="44" y="53" font-size="10.5" font-weight="600" fill="#A390FB" letter-spacing="1.2">RECOGNITION</text>
+
+        <!-- Column Heading -->
+        <text x="32" y="112" font-family="'Fraunces', 'Faculty Glyphic', Georgia, serif" font-size="24" font-weight="500" fill="#171717" letter-spacing="-0.3">
+          Featured in Editorial De...
+        </text>
+
+        <line x1="32" y1="136" x2="368" y2="136" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
+
+        <!-- Column Description -->
+        <foreignObject x="32" y="156" width="336" height="260">
+          <p xmlns="http://www.w3.org/1999/xhtml" style="margin:0; font-family:'Geist', sans-serif; font-size:15px; line-height:1.65; color:#545454;">
+            Celebrated for setting a benchmark in contemporary Indian digital real estate and luxury user experience.
+          </p>
+        </foreignObject>
+
+        <!-- Subtle bottom accent line -->
+        <rect x="32" y="420" width="48" height="3" rx="1.5" fill="#A390FB"/>
+      </g>
+    
+  </g>
+</svg>

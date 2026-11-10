@@ -42,6 +42,7 @@ function getSectionTargetTop(index, position = 'start') {
   const journeyEl = document.getElementById('journey')
   const aboutEl = document.getElementById('about')
   const contactEl = document.getElementById('contact')
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
 
   const getDocTop = (el) => {
     if (!el) return 0
@@ -55,10 +56,10 @@ function getSectionTargetTop(index, position = 'start') {
   const contactTop = contactEl ? getDocTop(contactEl) : aboutTop + window.innerHeight
 
   if (index === 0) return 0
-  if (index === 1) return worksTop
-  if (index === 2) return journeyTop // Always lands at top of Journey so sequence plays 2016 → 2026
-  if (index === 3) return aboutTop
-  if (index === 4) return contactTop
+  if (index === 1) return Math.min(worksTop, maxScroll)
+  if (index === 2) return Math.min(journeyTop, maxScroll) // Always lands at top of Journey so sequence plays 2016 → 2026
+  if (index === 3) return Math.min(aboutTop, maxScroll)
+  if (index === 4) return Math.min(contactTop, maxScroll)
   return 0
 }
 
@@ -104,6 +105,42 @@ function getCurrentSectionInfo() {
 }
 
 /**
+ * Helper: determines which section target is closest to the given scrollY position.
+ * Used for scrollbar dragging and track-clicking section snapping.
+ */
+function getClosestSectionIndex(scrollY) {
+  if (typeof window === 'undefined') return 0
+
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+  const clampedScrollY = Math.max(0, Math.min(maxScroll, scrollY))
+
+  // If dragged near the top (< 100px), cleanly target Home
+  if (clampedScrollY <= 100) {
+    return 0
+  }
+
+  // If dragged near the bottom (within 100px of maxScroll), cleanly target Contact
+  if (clampedScrollY >= maxScroll - 100) {
+    return SECTIONS.length - 1
+  }
+
+  // Otherwise, find the section target that has the smallest absolute difference
+  let closestIndex = 0
+  let minDiff = Infinity
+
+  for (let i = 0; i < SECTIONS.length; i++) {
+    const targetTop = getSectionTargetTop(i, 'start')
+    const diff = Math.abs(clampedScrollY - targetTop)
+    if (diff < minDiff) {
+      minDiff = diff
+      closestIndex = i
+    }
+  }
+
+  return closestIndex
+}
+
+/**
  * HomepagePreview - Controlled Section Navigation System
  *
  * Implements full-page controlled navigation across all 5 sections:
@@ -130,6 +167,7 @@ export default function HomepagePreview({ isLoaded = true, onReplayLoader }) {
   const currentIndexRef = useRef(0)
   const isAnimatingRef = useRef(false)
   const isTimelinePlayingRef = useRef(false)
+  const isScrollbarDraggingRef = useRef(false)
   const cooldownTimerRef = useRef(null)
 
   const handleTimelineStart = useCallback(() => {
@@ -141,7 +179,7 @@ export default function HomepagePreview({ isLoaded = true, onReplayLoader }) {
   }, [])
 
   // Navigate smoothly to a specific section index
-  const goToSection = useCallback((targetIndex, position = 'start') => {
+  const goToSection = useCallback((targetIndex, position = 'start', customDuration = null) => {
     const clampedIndex = Math.max(0, Math.min(SECTIONS.length - 1, targetIndex))
     if (isAnimatingRef.current) return
 
@@ -155,33 +193,77 @@ export default function HomepagePreview({ isLoaded = true, onReplayLoader }) {
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+    const duration = prefersReducedMotion ? 0.05 : (customDuration ?? 1.2)
 
-    // Controlled section transitions take 1.2s (> 1 second requirement)
+    if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current)
+    gsap.killTweensOf(window)
+
+    // Controlled section transitions take 1.2s (> 1 second requirement) unless custom duration provided
     gsap.to(window, {
       scrollTo: { y: targetTop, autoKill: false },
-      duration: prefersReducedMotion ? 0.05 : 1.2,
+      duration,
       ease: 'power2.inOut',
+      overwrite: 'auto',
       onComplete: () => {
-        // 300ms buffer to absorb residual trackpad momentum and prevent double-jumps
+        // Buffer to absorb residual momentum and prevent double-jumps
         cooldownTimerRef.current = setTimeout(() => {
           isAnimatingRef.current = false
-        }, 300)
+        }, 200)
       },
     })
   }, [])
 
-  // Expose goToSection for reliable programmatic testing & deep linking
+  // Snap cleanly to the closest section (used for scrollbar thumb dragging and track clicking)
+  const snapToClosestSection = useCallback(() => {
+    if (isAnimatingRef.current) return
+
+    const scrollY = window.scrollY
+    const closestIndex = getClosestSectionIndex(scrollY)
+    const targetTop = getSectionTargetTop(closestIndex, 'start')
+    const distance = Math.abs(scrollY - targetTop)
+
+    // If already aligned within 2px, update index if needed and do not animate
+    if (distance <= 2) {
+      if (currentIndexRef.current !== closestIndex) {
+        currentIndexRef.current = closestIndex
+        setCurrentIndex(closestIndex)
+      }
+      return
+    }
+
+    // Adaptive duration for smooth snapping:
+    // Small settling (< 200px) snaps quickly (0.45s)
+    // Medium distance (< 500px) snaps in 0.7s
+    // Larger distance smoothly glides in 1.0s
+    let snapDuration = 1.0
+    if (distance < 200) {
+      snapDuration = 0.45
+    } else if (distance < 500) {
+      snapDuration = 0.7
+    }
+
+    goToSection(closestIndex, 'start', snapDuration)
+  }, [goToSection])
+
+  // Expose goToSection and snapToClosestSection for reliable programmatic testing & deep linking
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.__goToSection = goToSection
+      window.__snapToClosestSection = snapToClosestSection
+      window.__getClosestSectionIndex = getClosestSectionIndex
+      window.__isScrollbarDragging = () => isScrollbarDraggingRef.current
+      window.__isAnimating = () => isAnimatingRef.current
     }
     return () => {
       if (typeof window !== 'undefined') {
         delete window.__goToSection
+        delete window.__snapToClosestSection
+        delete window.__getClosestSectionIndex
+        delete window.__isScrollbarDragging
+        delete window.__isAnimating
       }
     }
-  }, [goToSection])
+  }, [goToSection, snapToClosestSection])
 
   // Header navigation click handler
   const handleNavClick = useCallback(
@@ -196,20 +278,75 @@ export default function HomepagePreview({ isLoaded = true, onReplayLoader }) {
     [goToSection]
   )
 
-  // Synchronize active header link with scroll position
+  // Synchronize active header link with scroll position and handle scrollbar thumb/track snapping
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    let scrollEndDebounceTimer = null
+
     const handleScroll = () => {
+      // If an active section transition is running, ignore scroll events
       if (isAnimatingRef.current) return
+
+      // Synchronize current section indicator in real time as scrollbar moves
       const current = getCurrentSectionInfo()
       if (current.index !== currentIndexRef.current) {
         currentIndexRef.current = current.index
         setCurrentIndex(current.index)
       }
+
+      // If user is actively holding down and dragging the scrollbar thumb,
+      // let them drag freely without fighting the cursor
+      if (isScrollbarDraggingRef.current) return
+
+      // Debounce snap for native scrolls (track clicks, momentum, etc.)
+      if (scrollEndDebounceTimer) clearTimeout(scrollEndDebounceTimer)
+      scrollEndDebounceTimer = setTimeout(() => {
+        if (!isScrollbarDraggingRef.current && !isAnimatingRef.current) {
+          snapToClosestSection()
+        }
+      }, 150)
+    }
+
+    const handlePointerDown = (e) => {
+      // Check if mousedown/pointerdown is on the native vertical scrollbar
+      if (e.clientX >= document.documentElement.clientWidth - 4) {
+        isScrollbarDraggingRef.current = true
+      }
+    }
+
+    const handlePointerUp = () => {
+      if (isScrollbarDraggingRef.current) {
+        isScrollbarDraggingRef.current = false
+        if (scrollEndDebounceTimer) clearTimeout(scrollEndDebounceTimer)
+        // Immediate clean snap on release
+        snapToClosestSection()
+      }
+    }
+
+    // Modern browser standard event for when any scroll completes
+    const handleScrollEnd = () => {
+      if (!isScrollbarDraggingRef.current && !isAnimatingRef.current) {
+        if (scrollEndDebounceTimer) clearTimeout(scrollEndDebounceTimer)
+        snapToClosestSection()
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener('scrollend', handleScrollEnd, { passive: true })
+    window.addEventListener('pointerdown', handlePointerDown, { passive: true })
+    window.addEventListener('pointerup', handlePointerUp, { passive: true })
+    window.addEventListener('mouseup', handlePointerUp, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('scrollend', handleScrollEnd)
+      window.removeEventListener('pointerdown', handlePointerDown)
+      window.removeEventListener('pointerup', handlePointerUp)
+      window.removeEventListener('mouseup', handlePointerUp)
+      if (scrollEndDebounceTimer) clearTimeout(scrollEndDebounceTimer)
+    }
+  }, [snapToClosestSection])
 
   // Main scroll, touch, and keyboard controller
   useEffect(() => {
@@ -312,6 +449,17 @@ export default function HomepagePreview({ isLoaded = true, onReplayLoader }) {
     // 2. Keyboard Navigation Controller
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA'].includes(e.target?.tagName)) return
+
+      if (e.key === 'Home') {
+        e.preventDefault()
+        goToSection(0, 'start')
+        return
+      }
+      if (e.key === 'End') {
+        e.preventDefault()
+        goToSection(SECTIONS.length - 1, 'start')
+        return
+      }
 
       const isDown = ['ArrowDown', 'PageDown'].includes(e.key) || (e.key === ' ' && !e.shiftKey)
       const isUp = ['ArrowUp', 'PageUp'].includes(e.key) || (e.key === ' ' && e.shiftKey)
