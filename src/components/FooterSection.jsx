@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { SiBehance, SiLinkedin, SiGithub } from 'react-icons/si'
 import AnimatedBorderBadge from './AnimatedBorderBadge'
 import AnimatedEmoji from './AnimatedEmoji'
 
@@ -301,18 +302,11 @@ export default function FooterSection({ className = '' }) {
       name: 'Behance',
       url: 'https://www.behance.net/souravhaldar',
       icon: (
-        <svg
-          className="w-4 h-4 shrink-0 rounded-full"
-          viewBox="0 0 24 24"
-          fill="none"
+        <SiBehance
+          size={15}
+          className="w-[15px] h-[15px] shrink-0 text-[#0057FF]"
           aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" fill="#0057ff" />
-          <path
-            fill="#ffffff"
-            d="M14.2 9.2h3.6v.9h-3.6v-.9zm-6.2 5.6H6.1V9.2H8c1.3 0 2 .5 2 1.4 0 .6-.3 1.1-.9 1.3.8.2 1.2.8 1.2 1.5 0 1-.8 1.4-2.3 1.4zm-.2-3.1c.6 0 1-.2 1-.7s-.4-.7-1-.7H7.1v1.4h.7zm.1 2.3c.7 0 1.2-.2 1.2-.8s-.4-.8-1.1-.8H7.1v1.6h.8zm7.3-.2c.6 0 1-.3 1.2-.8h1.4c-.3 1.1-1.3 1.8-2.6 1.8-1.7 0-2.8-1.2-2.8-2.8s1.1-2.9 2.8-2.9c1.6 0 2.7 1.1 2.7 2.7v.4h-4.1c0 .9.6 1.6 1.4 1.6zm-.1-2.4c-.6 0-1.1.4-1.3 1h2.5c-.1-.6-.6-1-1.2-1z"
-          />
-        </svg>
+        />
       ),
     },
     {
@@ -320,18 +314,11 @@ export default function FooterSection({ className = '' }) {
       name: 'Linkedin',
       url: 'https://www.linkedin.com/in/sourav-haldar2/',
       icon: (
-        <svg
-          className="w-4 h-4 shrink-0 rounded-full"
-          viewBox="0 0 24 24"
-          fill="none"
+        <SiLinkedin
+          size={15}
+          className="w-[15px] h-[15px] shrink-0 text-[#0A66C2]"
           aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" fill="#0A66C2" />
-          <path
-            fill="#ffffff"
-            d="M8.2 16.5H6.2v-6.3h2v6.3zm-1-7.2c-.7 0-1.2-.5-1.2-1.2s.5-1.2 1.2-1.2 1.2.5 1.2 1.2-.5 1.2-1.2 1.2zm10.6 7.2h-2v-3.3c0-.9-.3-1.5-1.1-1.5-.6 0-1 .4-1.1.9-.1.2-.1.4-.1.6v3.3h-2s.03-5.7 0-6.3h2v.9c.3-.4.8-1 1.9-1 1.4 0 2.3.9 2.3 2.9v3.5z"
-          />
-        </svg>
+        />
       ),
     },
     {
@@ -339,20 +326,11 @@ export default function FooterSection({ className = '' }) {
       name: 'Github',
       url: 'https://github.com/sourav2',
       icon: (
-        <svg
-          className="w-4 h-4 shrink-0 rounded-full"
-          viewBox="0 0 24 24"
-          fill="none"
+        <SiGithub
+          size={15}
+          className="w-[15px] h-[15px] shrink-0 text-[#181717]"
           aria-hidden="true"
-        >
-          <circle cx="12" cy="12" r="10" fill="#171717" />
-          <path
-            fill="#ffffff"
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M12 6C8.686 6 6 8.686 6 12c0 2.655 1.724 4.908 4.115 5.702.3.055.41-.13.41-.29 0-.142-.005-.52-.008-1.022-1.669.363-2.021-.806-2.021-.806-.272-.695-.666-.88-.666-.88-.545-.372.041-.365.041-.365.602.042.918.62.918.62.535.918 1.405.653 1.746.5.055-.388.21-.653.382-.803-1.332-.152-2.733-.668-2.733-2.97 0-.656.234-1.193.617-1.613-.062-.152-.268-.763.059-1.59 0 0 .504-.162 1.65.616A5.738 5.738 0 0112 8.906c.51.002 1.023.069 1.502.202 1.146-.778 1.648-.616 1.648-.616.328.827.122 1.438.06 1.59.385.42.617.957.617 1.613 0 2.309-1.403 2.816-2.74 2.966.216.185.407.552.407 1.113 0 .803-.007 1.452-.007 1.648 0 .161.108.348.413.289C16.278 16.906 18 14.653 18 12c0-3.314-2.686-6-6-6z"
-          />
-        </svg>
+        />
       ),
     },
   ]
@@ -510,7 +488,7 @@ export default function FooterSection({ className = '' }) {
       {/* ============================================================ */}
       <div
         ref={artworkRef}
-        className="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden w-[475px] sm:w-[625px] md:w-[800px] lg:w-[1050px] xl:w-[1200px] 2xl:w-[1280px] max-w-[76vw]"
+        className="absolute right-0 bottom-0 pointer-events-none select-none z-0 overflow-hidden w-[385px] min-[390px]:w-[405px] min-[430px]:w-[440px] sm:w-[625px] md:w-[800px] lg:w-[1050px] xl:w-[1200px] 2xl:w-[1280px] max-w-none sm:max-w-[76vw]"
         aria-hidden="true"
       >
         <div
@@ -529,7 +507,7 @@ export default function FooterSection({ className = '' }) {
                 'radial-gradient(ellipse 88% 88% at 92% 92%, black 48%, rgba(0,0,0,0.85) 68%, rgba(0,0,0,0.25) 86%, transparent 100%)',
               filter: 'contrast(1.05) brightness(0.97)',
             }}
-            loading="lazy"
+            loading="eager"
           />
         </div>
       </div>
